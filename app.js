@@ -1,6 +1,4 @@
 
-import * as XLSX from 'xlsx';
-
 document.addEventListener('DOMContentLoaded', function () {
     // --- MOCK DATA ---
     // Data mock untuk biaya karyawan
