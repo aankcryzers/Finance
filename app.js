@@ -25,11 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- FORMATTER ---
     // Formatter untuk mata uang Rupiah Indonesia
     const currencyFormatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Data");
-    XLSX.writeFile(wb, "export.xlsx");
     
     // --- UI ELEMENTS ---
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
