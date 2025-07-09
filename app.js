@@ -606,6 +606,5 @@ document.addEventListener('DOMContentLoaded', function () {
             updateDashboard();
         }
 
-        initializeCharts();
         renderAll();
 });
