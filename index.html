@@ -273,6 +273,79 @@
         document.getElementById('sparepart-cost-form').addEventListener('submit', e => { e.preventDefault(); const form = e.target; sparepartCostData.unshift({ date: form.querySelector('#sp-date').value, name: form.querySelector('#sp-name').value, code: form.querySelector('#sp-code').value, forUnit: form.querySelector('#sp-unit').value, quantity: parseFloat(form.querySelector('#sp-quantity').value), unitPrice: parseFloat(form.querySelector('#sp-unit-price').value), }); form.reset(); closeModal(document.getElementById('sparepart-cost-modal')); renderAll(); });
         document.getElementById('rental-asset-cost-form').addEventListener('submit', e => { e.preventDefault(); const form = e.target; rentalAssetCostData.unshift({ date: form.querySelector('#ra-date').value, description: form.querySelector('#ra-description').value, type: form.querySelector('#ra-type').value, unit: form.querySelector('#ra-unit').value, totalCost: parseFloat(form.querySelector('#ra-total-cost').value), }); form.reset(); closeModal(document.getElementById('rental-asset-cost-modal')); renderAll(); });
 
+         // Form untuk biaya karyawan
+    document.getElementById('employee-cost-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newEntry = {
+            id: Date.now().toString(), // ID unik
+            date: document.getElementById('emp-date').value,
+            name: document.getElementById('emp-name').value,
+            position: document.getElementById('emp-position').value,
+            base: parseInt(document.getElementById('emp-base-salary').value),
+            allowance: parseInt(document.getElementById('emp-allowance').value),
+            overtime: parseInt(document.getElementById('emp-overtime').value),
+        };
+        employeeCostData.push(newEntry);
+        closeModal(document.getElementById('employee-cost-modal'));
+        this.reset(); // Reset form
+        renderAll(); // Render ulang semua
+        showMessage('Data biaya karyawan berhasil ditambahkan!', 'alert');
+    });
+
+    // Form untuk biaya logistik
+    document.getElementById('logistics-cost-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newEntry = {
+            id: Date.now().toString(), // ID unik
+            date: document.getElementById('log-date').value,
+            unit: document.getElementById('log-unit').value,
+            fuelType: document.getElementById('log-fuel-type').value,
+            liters: parseInt(document.getElementById('log-liters').value),
+            pricePerLiter: parseInt(document.getElementById('log-price-per-liter').value),
+        };
+        logisticsCostData.push(newEntry);
+        closeModal(document.getElementById('logistics-cost-modal'));
+        this.reset();
+        renderAll();
+        showMessage('Data biaya logistik/BBM berhasil ditambahkan!', 'alert');
+    });
+
+    // Form untuk biaya spare part
+    document.getElementById('sparepart-cost-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newEntry = {
+            id: Date.now().toString(), // ID unik
+            date: document.getElementById('sp-date').value,
+            name: document.getElementById('sp-name').value,
+            code: document.getElementById('sp-code').value,
+            forUnit: document.getElementById('sp-unit').value,
+            quantity: parseInt(document.getElementById('sp-quantity').value),
+            unitPrice: parseInt(document.getElementById('sp-unit-price').value),
+        };
+        sparepartCostData.push(newEntry);
+        closeModal(document.getElementById('sparepart-cost-modal'));
+        this.reset();
+        renderAll();
+        showMessage('Data biaya spare part berhasil ditambahkan!', 'alert');
+    });
+
+    // Form untuk biaya rental dan aset
+    document.getElementById('rental-asset-cost-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newEntry = {
+            id: Date.now().toString(), // ID unik
+            date: document.getElementById('ra-date').value,
+            description: document.getElementById('ra-description').value,
+            type: document.getElementById('ra-type').value,
+            unit: document.getElementById('ra-unit').value,
+            totalCost: parseInt(document.getElementById('ra-total-cost').value),
+        };
+        rentalAssetCostData.push(newEntry);
+        closeModal(document.getElementById('rental-asset-cost-modal'));
+        this.reset();
+        renderAll();
+        showMessage('Data biaya rental & aset berhasil ditambahkan!', 'alert');
+    });
         // --- TABLE RENDERERS ---
         function renderEmployeeTable() {
             const tbody = document.getElementById('employee-cost-table-body');
