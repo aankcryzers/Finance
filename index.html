@@ -58,7 +58,14 @@
             </nav>
         </aside>
 
-       <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-900 p-4 md:p-8">
+      <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-gray-800/50 backdrop-blur-sm shadow-md flex justify-between items-center p-4 lg:justify-end">
+                <button id="mobile-menu-button" class="lg:hidden text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg></button>
+                <div class="flex items-center"><span class="text-sm mr-4">Selamat datang, Admin</span><img src="https://placehold.co/40x40/374151/FFF?text=A" alt="Avatar Pengguna" class="rounded-full h-10 w-10 border-2 border-gray-600"></div>
+            </header>
+            
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-900 p-4 md:p-8">
   <!-- Dashboard Section -->
   <div id="dashboard" class="content-section">
     <h2 class="text-3xl font-bold text-white mb-6">Dasbor Biaya Operasional</h2>
