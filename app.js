@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             // Perbarui dashboard jika bagian yang dituju adalah dashboard
             if (targetId === 'dashboard') {
-                updateCharts();
+                renderAll();
             }
         });
     });
