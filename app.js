@@ -604,4 +604,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateCharts();
     }
 });
-
+    // Panggil renderAll saat halaman pertama kali dimuat
+    renderAll();
+});
