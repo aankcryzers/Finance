@@ -597,12 +597,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Fungsi utama untuk merender semua komponen UI
-    function renderAll() {
-        renderAllTables();
-        updateKPIs();
-        updateCharts();
-    }
 
     // Inisialisasi aplikasi saat DOM dimuat
     renderAll();
