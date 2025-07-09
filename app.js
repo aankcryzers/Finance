@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     // --- MOCK DATA ---
     // Data mock untuk biaya karyawan
@@ -25,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- FORMATTER ---
     // Formatter untuk mata uang Rupiah Indonesia
     const currencyFormatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-    
+
     // --- UI ELEMENTS ---
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     const contentSections = document.querySelectorAll('.content-section');
@@ -105,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             // Perbarui dashboard jika bagian yang dituju adalah dashboard
             if (targetId === 'dashboard') {
-                renderAll();
+                updateDashboard();
             }
         });
     });
@@ -115,21 +114,34 @@ document.addEventListener('DOMContentLoaded', function () {
         sidebar.classList.toggle('-translate-x-full');
     });
 
-  
-     // --- MODAL HANDLING ---
-        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
-        function closeModal(modal) { modal.classList.remove('active'); }
-        document.getElementById('add-employee-cost-btn').addEventListener('click', () => openModal('employee-cost-modal'));
-        document.getElementById('add-logistics-cost-btn').addEventListener('click', () => openModal('logistics-cost-modal'));
-        document.getElementById('add-sparepart-cost-btn').addEventListener('click', () => openModal('sparepart-cost-modal'));
-        document.getElementById('add-rental-asset-cost-btn').addEventListener('click', () => openModal('rental-asset-cost-modal'));
-        
-        modals.forEach(modal => {
-            modal.querySelector('.modal-backdrop').addEventListener('click', () => closeModal(modal));
-            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
-        });
+    // --- MODAL HANDLING ---
+    // Fungsi untuk membuka modal
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10); // Transisi opasitas
+    }
 
-   
+    // Fungsi untuk menutup modal
+    function closeModal(modal) {
+        modal.classList.add('opacity-0'); // Transisi opasitas
+        setTimeout(() => modal.classList.add('hidden'), 300); // Sembunyikan setelah transisi
+    }
+
+    // Event listener untuk tombol 'Tambah'
+    document.getElementById('add-employee-cost-btn').addEventListener('click', () => openModal('employee-cost-modal'));
+    document.getElementById('add-logistics-cost-btn').addEventListener('click', () => openModal('logistics-cost-modal'));
+    document.getElementById('add-sparepart-cost-btn').addEventListener('click', () => openModal('sparepart-cost-modal'));
+    document.getElementById('add-rental-asset-cost-btn').addEventListener('click', () => openModal('rental-asset-cost-modal'));
+    
+    // Event listener untuk menutup modal saat mengklik backdrop atau tombol 'Batal'
+    modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target.classList.contains('btn-cancel')) {
+                closeModal(modal);
+            }
+        });
+    });
 
     // --- TABLE RENDERERS (dengan fungsi Hapus) ---
 
@@ -584,14 +596,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Fungsi utama untuk merender semua komponen UI
     function renderAll() {
-            renderEmployeeTable();
-            renderLogisticsTable();
-            renderSparepartTable();
-            renderRentalAssetTable();
-            updateDashboard();
-        }
+        renderAllTables();
+        updateKPIs();
+        updateCharts();
+    }
 
-        initializeCharts();
-        renderAll();
+    // Inisialisasi aplikasi saat DOM dimuat
+    renderAll();
 });
+
