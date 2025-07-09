@@ -603,7 +603,5 @@ document.addEventListener('DOMContentLoaded', function () {
         updateKPIs();
         updateCharts();
     }
-    // Inisialisasi aplikasi saat DOM dimuat
-    renderAll();
 });
 
