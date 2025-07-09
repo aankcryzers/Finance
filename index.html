@@ -10,48 +10,158 @@
     
     <!-- Chart.js for data visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS for Excel export -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000; /* iOS-like true black background */
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1c1c1e; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #777; }
+        
+        /* iOS-like styling */
+        .ios-bg { background-color: #1c1c1e; } /* Dark gray for cards */
+        .ios-header { background-color: rgba(28, 28, 30, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .ios-sidebar { background-color: #1c1c1e; }
+        .ios-main-bg { background-color: #000; }
+
+        .sidebar-link.active { background-color: #007aff; color: #fff; }
+        .sidebar-link { border-radius: 8px; }
+
+        .ios-card {
+            background-color: #1c1c1e;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .ios-table {
+            background-color: #1c1c1e;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .ios-table tr:not(:last-child) {
+            border-bottom: 1px solid #3a3a3c;
+        }
+        .ios-table th {
+            background-color: #1c1c1e;
+            color: #8e8e93;
+            font-weight: 500;
+            text-transform: none;
+        }
+        .ios-table td {
+            background-color: #1c1c1e;
+        }
+
+        .ios-button-primary {
+            background-color: #007aff;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: transform 0.1s ease;
+        }
+        .ios-button-primary:active {
+            transform: scale(0.95);
+        }
+        .ios-button-secondary {
+            background-color: #3a3a3c;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: transform 0.1s ease;
+        }
+        .ios-button-secondary:active {
+            transform: scale(0.95);
+        }
+
+        /* iOS Modal (Sheet) Animation */
+        .modal-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #1c1c1e;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal.active .modal-sheet {
+            transform: translateY(0);
+        }
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        .modal.active .modal-backdrop {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Page transition animation */
+        .content-section {
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px; /* Default height */
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
 </head>
 <body class="text-gray-200">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden ios-main-bg">
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-gray-800 text-gray-200 flex-shrink-0 transition-all duration-300 ease-in-out fixed lg:relative lg:translate-x-0 -translate-x-full z-30">
-            <div class="p-6">
+        <aside id="sidebar" class="w-64 ios-sidebar flex-shrink-0 transition-all duration-300 ease-in-out fixed lg:relative lg:translate-x-0 -translate-x-full z-30 p-4">
+            <div class="p-2 mb-4">
                 <h1 class="text-2xl font-bold text-white">CostTrack</h1>
                 <p class="text-sm text-gray-400">Kontraktor Tambang</p>
             </div>
-            <nav class="mt-6 text-sm">
-                <a href="#" class="sidebar-link active flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="dashboard">
+            <nav class="mt-6 text-sm flex flex-col gap-2">
+                <a href="#" class="sidebar-link active flex items-center py-2 px-3 transition duration-200 hover:bg-gray-700" data-target="dashboard">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
                     Dasbor
                 </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="employee-cost">
+                <a href="#" class="sidebar-link flex items-center py-2 px-3 transition duration-200 hover:bg-gray-700" data-target="employee-cost">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015.5-4.96A5 5 0 0111 16v1H1v-1a5 5 0 015-5z" /></svg>
                     Biaya Karyawan
                 </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="logistics-cost">
+                <a href="#" class="sidebar-link flex items-center py-2 px-3 transition duration-200 hover:bg-gray-700" data-target="logistics-cost">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0117.657 18.657z" /></svg>
                     Biaya Logistik/BBM
                 </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="sparepart-cost">
+                <a href="#" class="sidebar-link flex items-center py-2 px-3 transition duration-200 hover:bg-gray-700" data-target="sparepart-cost">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01-.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
                     Biaya Spare Part
                 </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="rental-asset-cost">
+                <a href="#" class="sidebar-link flex items-center py-2 px-3 transition duration-200 hover:bg-gray-700" data-target="rental-asset-cost">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v10a1 1 0 001 1h1zM6 3a1 1 0 011 1v10a1 1 0 11-2 0V4a1 1 0 011-1zM3 6a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" /></svg>
                     Rental & Aset
                 </a>
-                   <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="reports">
+                 <a href="#" class="sidebar-link flex items-center py-2 px-3 transition duration-200 hover:bg-gray-700" data-target="reports">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     Laporan
                 </a>
@@ -60,228 +170,185 @@
 
         <!-- Main content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-gray-800/50 backdrop-blur-sm shadow-md flex justify-between items-center p-4 lg:justify-end">
+            <header class="ios-header flex justify-between items-center p-4 lg:justify-end border-b border-gray-700">
                 <button id="mobile-menu-button" class="lg:hidden text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg></button>
                 <div class="flex items-center"><span class="text-sm mr-4">Selamat datang, Admin</span><img src="https://placehold.co/40x40/374151/FFF?text=A" alt="Avatar Pengguna" class="rounded-full h-10 w-10 border-2 border-gray-600"></div>
             </header>
             
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-900 p-4 md:p-8">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6">
                 <!-- Dashboard Section -->
                 <div id="dashboard" class="content-section">
-                    <h2 class="text-3xl font-bold text-white mb-6">Dasbor Biaya Operasional</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-sm font-medium text-gray-400">Total Biaya (Bulan Ini)</h3><p class="text-3xl font-bold text-red-400 mt-2" id="kpi-total-cost">Rp 0</p></div>
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-sm font-medium text-gray-400">Biaya Bahan Bakar</h3><p class="text-3xl font-bold text-orange-400 mt-2" id="kpi-fuel-cost">Rp 0</p></div>
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-sm font-medium text-gray-400">Biaya Karyawan</h3><p class="text-3xl font-bold text-blue-400 mt-2" id="kpi-employee-cost">Rp 0</p></div>
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-sm font-medium text-gray-400">Biaya Spare Part</h3><p class="text-3xl font-bold text-yellow-400 mt-2" id="kpi-sparepart-cost">Rp 0</p></div>
+                    <h2 class="text-3xl font-bold text-white mb-6 px-2">Dasbor</h2>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="ios-card p-4"><h3 class="text-sm font-medium text-gray-400">Total Biaya</h3><p class="text-2xl font-semibold text-red-400 mt-1" id="kpi-total-cost">Rp 0</p></div>
+                        <div class="ios-card p-4"><h3 class="text-sm font-medium text-gray-400">Bahan Bakar</h3><p class="text-2xl font-semibold text-orange-400 mt-1" id="kpi-fuel-cost">Rp 0</p></div>
+                        <div class="ios-card p-4"><h3 class="text-sm font-medium text-gray-400">Karyawan</h3><p class="text-2xl font-semibold text-blue-400 mt-1" id="kpi-employee-cost">Rp 0</p></div>
+                        <div class="ios-card p-4"><h3 class="text-sm font-medium text-gray-400">Spare Part</h3><p class="text-2xl font-semibold text-yellow-400 mt-1" id="kpi-sparepart-cost">Rp 0</p></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-lg lg:col-span-3">
-                          <h3 class="text-lg font-semibold text-white mb-4">Tren Biaya Bulanan</h3>
-                          <div class="relative h-64 md:h-80 lg:h-96">
-                            <canvas id="monthlyCostTrendChart" class="absolute inset-0 w-full h-full"></canvas>
-                              </div>
-                              </div>
-                        <div class="bg-gray-800 p-6 rounded-lg shadow-lg lg:col-span-2">
-                          <h3 class="text-lg font-semibold text-white mb-4">Komposisi Biaya</h3>
-                              <div class="relative h-64 md:h-80 lg:h-96">
-                                <canvas id="costCompositionChart" class="absolute inset-0 w-full h-full"></canvas>
-                              </div>
-                            </div>
-                <!-- Employee Cost Section -->
+                        <div class="ios-card p-4 lg:col-span-3"><h3 class="text-lg font-semibold text-white mb-4">Tren Biaya Bulanan</h3><div class="chart-container"><canvas id="monthlyCostTrendChart"></canvas></div></div>
+                        <div class="ios-card p-4 lg:col-span-2"><h3 class="text-lg font-semibold text-white mb-4">Komposisi Biaya</h3><div class="chart-container" style="height: 300px;"><canvas id="costCompositionChart"></canvas></div></div>
+                    </div>
+                </div>
+
+                <!-- Other Sections (Employee, Logistics, etc.) -->
                 <div id="employee-cost" class="content-section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-3xl font-bold text-white">Data Biaya Karyawan</h2>
-                        <div class="flex gap-2">
-                            <button id="add-employee-cost-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 11a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1v-1z" /></svg>Tambah Gaji</button>
-                            <button id="export-employee-cost-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Export Excel</button>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-300" id="employee-cost-table">
-                            <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th scope="col" class="px-6 py-3">Tanggal</th><th scope="col" class="px-6 py-3">Nama</th><th scope="col" class="px-6 py-3">Jabatan</th><th scope="col" class="px-6 py-3 text-right">Gaji Pokok</th><th scope="col" class="px-6 py-3 text-right">Tunjangan</th><th scope="col" class="px-6 py-3 text-right">Lembur</th><th scope="col" class="px-6 py-3 text-right">Total Gaji</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead>
-                            <tbody id="employee-cost-table-body"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center mb-6 px-2"><h2 class="text-3xl font-bold text-white">Biaya Karyawan</h2><button id="add-employee-cost-btn" class="ios-button-primary py-2 px-4 text-sm">Tambah Gaji</button></div>
+                    <div class="ios-table"><table class="w-full text-sm text-left"><thead class="text-xs"><tr><th class="px-4 py-3">Nama</th><th class="px-4 py-3 text-right">Total Gaji</th></tr></thead><tbody id="employee-cost-table-body"></tbody></table></div>
                 </div>
-
-                <!-- Logistics Cost Section -->
                 <div id="logistics-cost" class="content-section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-3xl font-bold text-white">Data Biaya Logistik & BBM</h2>
-                        <div class="flex gap-2">
-                            <button id="add-logistics-cost-btn" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4a1 1 0 011-1h1.586l.707.707a2 2 0 002.828 0L12.414 3H14a1 1 0 011 1v1.586l-.293.293a1 1 0 01-1.414 0L12 5.586V13a1 1 0 01-1 1h-1a1 1 0 110-2h1V5.586l-1.293 1.293a1 1 0 01-1.414 0L7 5.586V13a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm13 3a1 1 0 01-1 1h-1v5a1 1 0 11-2 0V8h-1a1 1 0 110-2h1V5a1 1 0 011-1h1a1 1 0 011 1v2z" clip-rule="evenodd" /></svg>Tambah BBM</button>
-                            <button id="export-logistics-cost-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Export Excel</button>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-300" id="logistics-cost-table">
-                            <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th scope="col" class="px-6 py-3">Tanggal</th><th scope="col" class="px-6 py-3">Unit/Alat</th><th scope="col" class="px-6 py-3">Jenis BBM</th><th scope="col" class="px-6 py-3 text-right">Jumlah (Ltr)</th><th scope="col" class="px-6 py-3 text-right">Harga/Ltr</th><th scope="col" class="px-6 py-3 text-right">Total Biaya</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead>
-                            <tbody id="logistics-cost-table-body"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center mb-6 px-2"><h2 class="text-3xl font-bold text-white">Biaya Logistik/BBM</h2><button id="add-logistics-cost-btn" class="ios-button-primary py-2 px-4 text-sm">Tambah BBM</button></div>
+                    <div class="ios-table"><table class="w-full text-sm text-left"><thead class="text-xs"><tr><th class="px-4 py-3">Unit/Alat</th><th class="px-4 py-3 text-right">Total Biaya</th></tr></thead><tbody id="logistics-cost-table-body"></tbody></table></div>
                 </div>
-
-                <!-- Sparepart Cost Section -->
                 <div id="sparepart-cost" class="content-section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-3xl font-bold text-white">Data Biaya Spare Part</h2>
-                        <div class="flex gap-2">
-                            <button id="add-sparepart-cost-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>Tambah Spare Part</button>
-                            <button id="export-sparepart-cost-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Export Excel</button>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-300" id="sparepart-cost-table">
-                            <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th scope="col" class="px-6 py-3">Tanggal</th><th scope="col" class="px-6 py-3">Nama Part</th><th scope="col" class="px-6 py-3">Kode Part</th><th scope="col" class="px-6 py-3">Untuk Unit</th><th scope="col" class="px-6 py-3 text-right">Jumlah</th><th scope="col" class="px-6 py-3 text-right">Harga Satuan</th><th scope="col" class="px-6 py-3 text-right">Total Biaya</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead>
-                            <tbody id="sparepart-cost-table-body"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center mb-6 px-2"><h2 class="text-3xl font-bold text-white">Biaya Spare Part</h2><button id="add-sparepart-cost-btn" class="ios-button-primary py-2 px-4 text-sm">Tambah Part</button></div>
+                    <div class="ios-table"><table class="w-full text-sm text-left"><thead class="text-xs"><tr><th class="px-4 py-3">Nama Part</th><th class="px-4 py-3">Untuk Unit</th><th class="px-4 py-3 text-right">Total Biaya</th></tr></thead><tbody id="sparepart-cost-table-body"></tbody></table></div>
                 </div>
-                
-                <!-- Rental & Asset Cost Section -->
                 <div id="rental-asset-cost" class="content-section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-3xl font-bold text-white">Data Biaya Rental & Aset</h2>
-                        <div class="flex gap-2">
-                            <button id="add-rental-asset-cost-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>Tambah Biaya</button>
-                            <button id="export-rental-asset-cost-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Export Excel</button>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-300" id="rental-asset-cost-table">
-                            <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th scope="col" class="px-6 py-3">Tanggal</th><th scope="col" class="px-6 py-3">Deskripsi</th><th scope="col" class="px-6 py-3">Jenis</th><th scope="col" class="px-6 py-3">Unit</th><th scope="col" class="px-6 py-3 text-right">Total Biaya</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead>
-                            <tbody id="rental-asset-cost-table-body"></tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between items-center mb-6 px-2"><h2 class="text-3xl font-bold text-white">Rental & Aset</h2><button id="add-rental-asset-cost-btn" class="ios-button-primary py-2 px-4 text-sm">Tambah Biaya</button></div>
+                    <div class="ios-table"><table class="w-full text-sm text-left"><thead class="text-xs"><tr><th class="px-4 py-3">Deskripsi</th><th class="px-4 py-3">Jenis</th><th class="px-4 py-3 text-right">Total Biaya</th></tr></thead><tbody id="rental-asset-cost-table-body"></tbody></table></div>
                 </div>
-
-                <!-- Reports Section -->
                 <div id="reports" class="content-section hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6">Laporan</h2>
-                    <div class="bg-gray-800 p-8 rounded-lg shadow-lg text-center">
-                        <h3 class="text-xl text-white">Fitur Laporan Sedang Dikembangkan</h3>
-                        <p class="text-gray-400 mt-2">Halaman ini akan berisi ringkasan dan analisis biaya yang dapat dicetak.</p>
-                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-6 px-2">Laporan</h2>
+                    <div class="ios-card p-8 text-center"><h3 class="text-xl text-white">Fitur Laporan Sedang Dikembangkan</h3><p class="text-gray-400 mt-2">Halaman ini akan berisi ringkasan dan analisis biaya.</p></div>
                 </div>
             </main>
         </div>
     </div>
     
-     <!-- Modals -->
+    <!-- Modals -->
     <div id="employee-cost-modal" class="modal hidden"><div class="modal-backdrop"></div><div class="modal-sheet p-4"><div class="p-2"><h3 class="text-xl font-bold text-white text-center mb-4">Tambah Gaji Karyawan</h3><form id="employee-cost-form" class="flex flex-col gap-4 text-base"><div class="ios-bg rounded-lg p-3"><input type="date" id="emp-date" class="w-full bg-transparent text-white focus:outline-none" required></div><div class="ios-bg rounded-lg p-3"><input type="text" id="emp-name" class="w-full bg-transparent text-white focus:outline-none" placeholder="Nama Karyawan" required></div><div class="ios-bg rounded-lg p-3"><input type="text" id="emp-position" class="w-full bg-transparent text-white focus:outline-none" placeholder="Jabatan" required></div><div class="ios-bg rounded-lg p-3"><input type="number" id="emp-base-salary" class="w-full bg-transparent text-white focus:outline-none" placeholder="Gaji Pokok" required></div><div class="ios-bg rounded-lg p-3"><input type="number" id="emp-allowance" class="w-full bg-transparent text-white focus:outline-none" placeholder="Tunjangan" required></div><div class="ios-bg rounded-lg p-3"><input type="number" id="emp-overtime" class="w-full bg-transparent text-white focus:outline-none" placeholder="Lembur" required></div><div class="grid grid-cols-2 gap-4 mt-4"><button type="button" class="btn-cancel ios-button-secondary py-3">Batal</button><button type="submit" class="ios-button-primary py-3">Simpan</button></div></form></div></div></div>
     <div id="logistics-cost-modal" class="modal hidden"><div class="modal-backdrop"></div><div class="modal-sheet p-4"><div class="p-2"><h3 class="text-xl font-bold text-white text-center mb-4">Tambah Biaya BBM</h3><form id="logistics-cost-form" class="flex flex-col gap-4 text-base"><div class="ios-bg rounded-lg p-3"><input type="date" id="log-date" class="w-full bg-transparent text-white focus:outline-none" required></div><div class="ios-bg rounded-lg p-3"><input type="text" id="log-unit" class="w-full bg-transparent text-white focus:outline-none" placeholder="Unit/Alat (e.g., EX-01)" required></div><div class="ios-bg rounded-lg p-3"><select id="log-fuel-type" class="w-full bg-transparent text-white focus:outline-none"><option value="Solar">Solar</option><option value="Bensin">Bensin</option></select></div><div class="ios-bg rounded-lg p-3"><input type="number" id="log-liters" class="w-full bg-transparent text-white focus:outline-none" placeholder="Jumlah (Liter)" required></div><div class="ios-bg rounded-lg p-3"><input type="number" id="log-price-per-liter" class="w-full bg-transparent text-white focus:outline-none" placeholder="Harga per Liter" required></div><div class="grid grid-cols-2 gap-4 mt-4"><button type="button" class="btn-cancel ios-button-secondary py-3">Batal</button><button type="submit" class="ios-button-primary py-3">Simpan</button></div></form></div></div></div>
     <div id="sparepart-cost-modal" class="modal hidden"><div class="modal-backdrop"></div><div class="modal-sheet p-4"><div class="p-2"><h3 class="text-xl font-bold text-white text-center mb-4">Tambah Spare Part</h3><form id="sparepart-cost-form" class="flex flex-col gap-4 text-base"><div class="ios-bg rounded-lg p-3"><input type="date" id="sp-date" class="w-full bg-transparent text-white focus:outline-none" required></div><div class="ios-bg rounded-lg p-3"><input type="text" id="sp-name" class="w-full bg-transparent text-white focus:outline-none" placeholder="Nama Spare Part" required></div><div class="ios-bg rounded-lg p-3"><input type="text" id="sp-code" class="w-full bg-transparent text-white focus:outline-none" placeholder="Kode Part (opsional)"></div><div class="ios-bg rounded-lg p-3"><input type="text" id="sp-unit" class="w-full bg-transparent text-white focus:outline-none" placeholder="Untuk Unit (e.g., DT-05)" required></div><div class="ios-bg rounded-lg p-3"><input type="number" id="sp-quantity" class="w-full bg-transparent text-white focus:outline-none" placeholder="Jumlah" required></div><div class="ios-bg rounded-lg p-3"><input type="number" id="sp-unit-price" class="w-full bg-transparent text-white focus:outline-none" placeholder="Harga Satuan" required></div><div class="grid grid-cols-2 gap-4 mt-4"><button type="button" class="btn-cancel ios-button-secondary py-3">Batal</button><button type="submit" class="ios-button-primary py-3">Simpan</button></div></form></div></div></div>
     <div id="rental-asset-cost-modal" class="modal hidden"><div class="modal-backdrop"></div><div class="modal-sheet p-4"><div class="p-2"><h3 class="text-xl font-bold text-white text-center mb-4">Tambah Biaya Rental/Aset</h3><form id="rental-asset-cost-form" class="flex flex-col gap-4 text-base"><div class="ios-bg rounded-lg p-3"><input type="date" id="ra-date" class="w-full bg-transparent text-white focus:outline-none" required></div><div class="ios-bg rounded-lg p-3"><input type="text" id="ra-description" class="w-full bg-transparent text-white focus:outline-none" placeholder="Deskripsi" required></div><div class="ios-bg rounded-lg p-3"><select id="ra-type" class="w-full bg-transparent text-white focus:outline-none"><option>Rental</option><option>Aset (Penyusutan)</option><option>Lain-lain</option></select></div><div class="ios-bg rounded-lg p-3"><input type="text" id="ra-unit" class="w-full bg-transparent text-white focus:outline-none" placeholder="Unit (e.g., BD-01)"></div><div class="ios-bg rounded-lg p-3"><input type="number" id="ra-total-cost" class="w-full bg-transparent text-white focus:outline-none" placeholder="Total Biaya" required></div><div class="grid grid-cols-2 gap-4 mt-4"><button type="button" class="btn-cancel ios-button-secondary py-3">Batal</button><button type="submit" class="ios-button-primary py-3">Simpan</button></div></form></div></div></div>
 
-    <!-- Employee Cost Modal -->
-    <div id="employee-cost-modal" class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 hidden opacity-0">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg">
-            <h3 class="text-2xl font-bold text-white mb-6">Tambah Biaya Gaji Karyawan</h3>
-            <form id="employee-cost-form">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="date" id="emp-date" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" required>
-                    <input type="text" id="emp-name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Nama Karyawan" required>
-                </div>
-                <div class="mb-4">
-                    <input type="text" id="emp-position" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Jabatan (e.g., Operator Excavator)" required>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <input type="number" id="emp-base-salary" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Gaji Pokok" required>
-                    <input type="number" id="emp-allowance" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Tunjangan" required>
-                    <input type="number" id="emp-overtime" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Lembur" required>
-                </div>
-                <div class="mt-4 flex justify-end gap-4">
-                    <button type="button" class="btn-cancel py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white rounded-lg">Batal</button>
-                    <button type="submit" class="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- MOCK DATA ---
+        let employeeCostData = [ { date: '2023-10-01', name: 'Budi Santoso', position: 'Operator Excavator', base: 6000000, allowance: 1500000, overtime: 500000 }, { date: '2023-10-01', name: 'Asep Sunandar', position: 'Driver Dump Truck', base: 5000000, allowance: 1200000, overtime: 750000 }, ];
+        let logisticsCostData = [ { date: '2023-10-02', unit: 'EX-01', fuelType: 'Solar', liters: 200, pricePerLiter: 10000 }, { date: '2023-10-02', unit: 'DT-05', fuelType: 'Solar', liters: 150, pricePerLiter: 10000 }, ];
+        let sparepartCostData = [ { date: '2023-10-03', name: 'Filter Oli', code: 'FO-123', forUnit: 'EX-01', quantity: 2, unitPrice: 350000 }, { date: '2023-10-04', name: 'Ban Luar', code: 'TY-789', forUnit: 'DT-05', quantity: 1, unitPrice: 4500000 }, ];
+        let rentalAssetCostData = [ { date: '2023-10-05', description: 'Sewa Bulldozer D85', type: 'Rental', unit: 'BD-01', totalCost: 15000000 }, { date: '2023-10-06', description: 'Penyusutan Excavator EX-01', type: 'Aset (Penyusutan)', unit: 'EX-01', totalCost: 25000000 }, ];
 
-    <!-- Logistics Cost Modal -->
-    <div id="logistics-cost-modal" class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 hidden opacity-0">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg">
-            <h3 class="text-2xl font-bold text-white mb-6">Tambah Biaya Logistik/BBM</h3>
-            <form id="logistics-cost-form">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="date" id="log-date" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" required>
-                    <input type="text" id="log-unit" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Unit/Alat (e.g., EX-01)" required>
-                </div>
-                <div class="mb-4">
-                    <select id="log-fuel-type" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5">
-                        <option>Solar</option>
-                        <option>Bensin</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="number" id="log-liters" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Jumlah (Liter)" required>
-                    <input type="number" id="log-price-per-liter" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Harga per Liter" required>
-                </div>
-                <div class="mt-4 flex justify-end gap-4">
-                    <button type="button" class="btn-cancel py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white rounded-lg">Batal</button>
-                    <button type="submit" class="py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        const currencyFormatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const modals = document.querySelectorAll('.modal');
 
-    <!-- Sparepart Cost Modal -->
-    <div id="sparepart-cost-modal" class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 hidden opacity-0">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg">
-            <h3 class="text-2xl font-bold text-white mb-6">Tambah Biaya Spare Part</h3>
-            <form id="sparepart-cost-form">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="date" id="sp-date" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" required>
-                    <input type="text" id="sp-name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Nama Spare Part" required>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="text" id="sp-code" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Kode Part (opsional)">
-                    <input type="text" id="sp-unit" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Untuk Unit (e.g., DT-05)" required>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="number" id="sp-quantity" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Jumlah" required>
-                    <input type="number" id="sp-unit-price" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Harga Satuan" required>
-                </div>
-                <div class="mt-4 flex justify-end gap-4">
-                    <button type="button" class="btn-cancel py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white rounded-lg">Batal</button>
-                    <button type="submit" class="py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        // --- NAVIGATION ---
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+                const activeSection = document.querySelector('.content-section:not(.hidden)');
+                if (activeSection.id !== targetId) {
+                    activeSection.classList.add('hidden');
+                    document.getElementById(targetId).classList.remove('hidden');
+                }
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                if (window.innerWidth < 1024) sidebar.classList.add('-translate-x-full');
+            });
+        });
+        mobileMenuButton.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
 
-    <!-- Rental & Asset Cost Modal -->
-    <div id="rental-asset-cost-modal" class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 hidden opacity-0">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg">
-            <h3 class="text-2xl font-bold text-white mb-6">Tambah Biaya Rental/Aset</h3>
-            <form id="rental-asset-cost-form">
-                <div class="mb-4">
-                    <input type="date" id="ra-date" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" required>
-                </div>
-                <div class="mb-4">
-                    <input type="text" id="ra-description" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Deskripsi (e.g., Sewa Bulldozer)" required>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <select id="ra-type" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5">
-                        <option>Rental</option>
-                        <option>Aset (Penyusutan)</option>
-                        <option>Lain-lain</option>
-                    </select>
-                    <input type="text" id="ra-unit" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Unit (e.g., BD-01)">
-                </div>
-                <div class="mb-4">
-                    <input type="number" id="ra-total-cost" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5" placeholder="Total Biaya" required>
-                </div>
-                <div class="mt-4 flex justify-end gap-4">
-                    <button type="button" class="btn-cancel py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white rounded-lg">Batal</button>
-                    <button type="submit" class="py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        // --- MODAL HANDLING ---
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modal) { modal.classList.remove('active'); }
+        document.getElementById('add-employee-cost-btn').addEventListener('click', () => openModal('employee-cost-modal'));
+        document.getElementById('add-logistics-cost-btn').addEventListener('click', () => openModal('logistics-cost-modal'));
+        document.getElementById('add-sparepart-cost-btn').addEventListener('click', () => openModal('sparepart-cost-modal'));
+        document.getElementById('add-rental-asset-cost-btn').addEventListener('click', () => openModal('rental-asset-cost-modal'));
+        
+        modals.forEach(modal => {
+            modal.querySelector('.modal-backdrop').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+        });
 
-    <script src="app.js"></script>
+        // --- FORM SUBMISSIONS ---
+        document.getElementById('employee-cost-form').addEventListener('submit', e => { e.preventDefault(); const form = e.target; employeeCostData.unshift({ date: form.querySelector('#emp-date').value, name: form.querySelector('#emp-name').value, position: form.querySelector('#emp-position').value, base: parseFloat(form.querySelector('#emp-base-salary').value), allowance: parseFloat(form.querySelector('#emp-allowance').value), overtime: parseFloat(form.querySelector('#emp-overtime').value), }); form.reset(); closeModal(document.getElementById('employee-cost-modal')); renderAll(); });
+        document.getElementById('logistics-cost-form').addEventListener('submit', e => { e.preventDefault(); const form = e.target; logisticsCostData.unshift({ date: form.querySelector('#log-date').value, unit: form.querySelector('#log-unit').value, fuelType: form.querySelector('#log-fuel-type').value, liters: parseFloat(form.querySelector('#log-liters').value), pricePerLiter: parseFloat(form.querySelector('#log-price-per-liter').value), }); form.reset(); closeModal(document.getElementById('logistics-cost-modal')); renderAll(); });
+        document.getElementById('sparepart-cost-form').addEventListener('submit', e => { e.preventDefault(); const form = e.target; sparepartCostData.unshift({ date: form.querySelector('#sp-date').value, name: form.querySelector('#sp-name').value, code: form.querySelector('#sp-code').value, forUnit: form.querySelector('#sp-unit').value, quantity: parseFloat(form.querySelector('#sp-quantity').value), unitPrice: parseFloat(form.querySelector('#sp-unit-price').value), }); form.reset(); closeModal(document.getElementById('sparepart-cost-modal')); renderAll(); });
+        document.getElementById('rental-asset-cost-form').addEventListener('submit', e => { e.preventDefault(); const form = e.target; rentalAssetCostData.unshift({ date: form.querySelector('#ra-date').value, description: form.querySelector('#ra-description').value, type: form.querySelector('#ra-type').value, unit: form.querySelector('#ra-unit').value, totalCost: parseFloat(form.querySelector('#ra-total-cost').value), }); form.reset(); closeModal(document.getElementById('rental-asset-cost-modal')); renderAll(); });
 
+        // --- TABLE RENDERERS ---
+        function renderEmployeeTable() {
+            const tbody = document.getElementById('employee-cost-table-body');
+            tbody.innerHTML = '';
+            employeeCostData.forEach(item => { const total = item.base + item.allowance + item.overtime; tbody.innerHTML += `<tr><td class="px-4 py-3"><div class="font-medium text-white">${item.name}</div><div class="text-xs text-gray-400">${item.position}</div></td><td class="px-4 py-3 text-right font-semibold text-white">${currencyFormatter.format(total)}</td></tr>`; });
+        }
+        function renderLogisticsTable() {
+            const tbody = document.getElementById('logistics-cost-table-body');
+            tbody.innerHTML = '';
+            logisticsCostData.forEach(item => { const total = item.liters * item.pricePerLiter; tbody.innerHTML += `<tr><td class="px-4 py-3"><div class="font-medium text-white">${item.unit}</div><div class="text-xs text-gray-400">${item.liters.toLocaleString('id-ID')} Ltr @ ${currencyFormatter.format(item.pricePerLiter)}</div></td><td class="px-4 py-3 text-right font-semibold text-white">${currencyFormatter.format(total)}</td></tr>`; });
+        }
+        function renderSparepartTable() {
+            const tbody = document.getElementById('sparepart-cost-table-body');
+            tbody.innerHTML = '';
+            sparepartCostData.forEach(item => { const total = item.quantity * item.unitPrice; tbody.innerHTML += `<tr><td class="px-4 py-3 font-medium text-white">${item.name}</td><td class="px-4 py-3">${item.forUnit}</td><td class="px-4 py-3 text-right font-semibold text-white">${currencyFormatter.format(total)}</td></tr>`; });
+        }
+        function renderRentalAssetTable() {
+            const tbody = document.getElementById('rental-asset-cost-table-body');
+            tbody.innerHTML = '';
+            rentalAssetCostData.forEach(item => { tbody.innerHTML += `<tr><td class="px-4 py-3 font-medium text-white">${item.description}</td><td class="px-4 py-3">${item.type}</td><td class="px-4 py-3 text-right font-semibold text-white">${currencyFormatter.format(item.totalCost)}</td></tr>`; });
+        }
+
+        // --- DASHBOARD UPDATE ---
+        function updateDashboard() {
+            const totalEmployeeCost = employeeCostData.reduce((sum, item) => sum + item.base + item.allowance + item.overtime, 0);
+            const totalFuelCost = logisticsCostData.reduce((sum, item) => sum + (item.liters * item.pricePerLiter), 0);
+            const totalSparepartCost = sparepartCostData.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+            const totalRentalAssetCost = rentalAssetCostData.reduce((sum, item) => sum + item.totalCost, 0);
+            const totalCost = totalEmployeeCost + totalFuelCost + totalSparepartCost + totalRentalAssetCost;
+
+            document.getElementById('kpi-total-cost').textContent = currencyFormatter.format(totalCost);
+            document.getElementById('kpi-employee-cost').textContent = currencyFormatter.format(totalEmployeeCost);
+            document.getElementById('kpi-fuel-cost').textContent = currencyFormatter.format(totalFuelCost);
+            document.getElementById('kpi-sparepart-cost').textContent = currencyFormatter.format(totalSparepartCost);
+
+            const categoryTotals = { 'Karyawan': totalEmployeeCost, 'BBM/Logistik': totalFuelCost, 'Spare Part': totalSparepartCost, 'Rental & Aset': totalRentalAssetCost, };
+            costCompositionChart.data.labels = Object.keys(categoryTotals);
+            costCompositionChart.data.datasets[0].data = Object.values(categoryTotals);
+            costCompositionChart.update();
+        }
+
+        // --- CHART.JS ---
+        const chartFontColor = '#8e8e93';
+        const chartGridColor = 'rgba(142, 142, 147, 0.2)';
+        let costCompositionChart, monthlyCostTrendChart;
+
+        function initializeCharts() {
+            Chart.defaults.color = chartFontColor;
+            Chart.defaults.font.family = "'Inter', sans-serif";
+
+            const costCompositionCtx = document.getElementById('costCompositionChart').getContext('2d');
+            costCompositionChart = new Chart(costCompositionCtx, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#007aff', '#ff9500', '#ffcc00', '#af52de'], borderColor: '#1c1c1e', borderWidth: 4, hoverOffset: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#2c2c2e', titleFont: { weight: 'bold' }, bodyFont: { size: 14 }, padding: 10, cornerRadius: 8 } } }
+            });
+
+            const monthlyCostTrendCtx = document.getElementById('monthlyCostTrendChart').getContext('2d');
+            monthlyCostTrendChart = new Chart(monthlyCostTrendCtx, {
+                type: 'bar',
+                data: { labels: ['Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'], datasets: [{ label: 'Total Biaya', data: [950, 1100, 1050, 1300, 1250, 1400, 1235].map(v => v*1000000), backgroundColor: '#ff3b30', borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { color: chartFontColor, callback: value => new Intl.NumberFormat('id-ID', {notation: 'compact', compactDisplay: 'short'}).format(value) }, grid: { color: chartGridColor, drawBorder: false } }, x: { ticks: { color: chartFontColor }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#2c2c2e', titleFont: { weight: 'bold' }, bodyFont: { size: 14 }, padding: 10, cornerRadius: 8, callbacks: { label: (context) => currencyFormatter.format(context.raw) } } } }
+            });
+        }
+
+        function renderAll() {
+            renderEmployeeTable();
+            renderLogisticsTable();
+            renderSparepartTable();
+            renderRentalAssetTable();
+            updateDashboard();
+        }
+
+        initializeCharts();
+        renderAll();
+    });
+    </script>
 </body>
 </html>
