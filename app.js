@@ -597,13 +597,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-// Fungsi utama untuk merender semua komponen UI
+    // Fungsi utama untuk merender semua komponen UI
     function renderAll() {
         renderAllTables();
         updateKPIs();
         updateCharts();
     }
-});
-    // Panggil renderAll saat halaman pertama kali dimuat
+
+    // Inisialisasi saat pertama kali load
     renderAll();
 });
