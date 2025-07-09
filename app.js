@@ -601,6 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderAll() {
         renderAllTables();
         updateKPIs();
+        rednderALL();
         updateCharts();
     }
 
