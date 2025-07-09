@@ -1,122 +1,116 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasbor Biaya Kontraktor Tambang (Gaya iOS)</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Chart.js for data visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS for Excel export -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dasbor Biaya Kontraktor Tambang (Gaya iOS)</title>
 
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #000;
+    }
+  </style>
 </head>
 <body class="text-gray-200">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-[#1c1c1e] text-gray-200 flex-shrink-0 fixed lg:relative lg:translate-x-0 -translate-x-full z-30 transition-transform duration-300 ease-in-out">
+      <div class="p-6">
+        <h1 class="text-2xl font-bold text-white">CostTrack</h1>
+        <p class="text-sm text-gray-400">Kontraktor Tambang</p>
+      </div>
+      <nav class="mt-6 text-sm space-y-1">
+        <a href="#" data-target="dashboard" class="sidebar-link active flex items-center py-3 px-6 hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3">🏠</span> Dasbor
+        </a>
+        <a href="#" data-target="employee-cost" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3">👷‍♂️</span> Biaya Karyawan
+        </a>
+        <a href="#" data-target="logistics-cost" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3">🛢️</span> Biaya Logistik/BBM
+        </a>
+        <a href="#" data-target="sparepart-cost" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3">🔧</span> Biaya Spare Part
+        </a>
+        <a href="#" data-target="rental-asset-cost" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3">🏗️</span> Rental & Aset
+        </a>
+        <a href="#" data-target="reports" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 rounded-lg transition">
+          <span class="mr-3">📊</span> Laporan
+        </a>
+      </nav>
+    </aside>
 
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-gray-800 text-gray-200 flex-shrink-0 transition-all duration-300 ease-in-out fixed lg:relative lg:translate-x-0 -translate-x-full z-30">
-            <div class="p-6">
-                <h1 class="text-2xl font-bold text-white">CostTrack</h1>
-                <p class="text-sm text-gray-400">Kontraktor Tambang</p>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden lg:ml-64">
+      <!-- Header -->
+      <header class="bg-[#1c1c1e]/80 backdrop-blur-md shadow flex justify-between items-center p-4">
+        <button id="mobile-menu-button" class="lg:hidden text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+        <div class="flex items-center">
+          <span class="text-sm mr-4">Selamat datang, Admin</span>
+          <img src="https://placehold.co/40x40/374151/FFF?text=A" alt="Avatar" class="rounded-full h-10 w-10 border-2 border-gray-600" />
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-1 overflow-y-auto bg-black p-4 md:p-6">
+        <!-- Section placeholder -->
+        <div id="dashboard" class="content-section">
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-[#1c1c1e] p-5 rounded-xl shadow flex flex-col justify-between">
+              <h3 class="text-sm text-gray-400">Total Biaya (Bulan Ini)</h3>
+              <p class="text-2xl font-semibold text-[#ff6b6b] mt-2" id="kpi-total-cost">Rp 0</p>
             </div>
-            <nav class="mt-6 text-sm">
-                <a href="#" class="sidebar-link active flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="dashboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
-                    Dasbor
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="employee-cost">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015.5-4.96A5 5 0 0111 16v1H1v-1a5 5 0 015-5z" /></svg>
-                    Biaya Karyawan
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="logistics-cost">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0117.657 18.657z" /></svg>
-                    Biaya Logistik/BBM
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="sparepart-cost">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01-.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
-                    Biaya Spare Part
-                </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="rental-asset-cost">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v10a1 1 0 001 1h1zM6 3a1 1 0 011 1v10a1 1 0 11-2 0V4a1 1 0 011-1zM3 6a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" /></svg>
-                    Rental & Aset
-                </a>
-                   <a href="#" class="sidebar-link flex items-center py-3 px-6 transition duration-200 hover:bg-gray-700" data-target="reports">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    Laporan
-                </a>
-            </nav>
-        </aside>
+            <div class="bg-[#1c1c1e] p-5 rounded-xl shadow flex flex-col justify-between">
+              <h3 class="text-sm text-gray-400">Biaya Bahan Bakar</h3>
+              <p class="text-2xl font-semibold text-[#f7b731] mt-2" id="kpi-fuel-cost">Rp 0</p>
+            </div>
+            <div class="bg-[#1c1c1e] p-5 rounded-xl shadow flex flex-col justify-between">
+              <h3 class="text-sm text-gray-400">Biaya Karyawan</h3>
+              <p class="text-2xl font-semibold text-[#4b7bec] mt-2" id="kpi-employee-cost">Rp 0</p>
+            </div>
+            <div class="bg-[#1c1c1e] p-5 rounded-xl shadow flex flex-col justify-between">
+              <h3 class="text-sm text-gray-400">Biaya Spare Part</h3>
+              <p class="text-2xl font-semibold text-[#fed330] mt-2" id="kpi-sparepart-cost">Rp 0</p>
+            </div>
+          </div>
 
-      <!-- Main content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-gray-800/50 backdrop-blur-sm shadow-md flex justify-between items-center p-4 lg:justify-end">
-                <button id="mobile-menu-button" class="lg:hidden text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg></button>
-                <div class="flex items-center"><span class="text-sm mr-4">Selamat datang, Admin</span><img src="https://placehold.co/40x40/374151/FFF?text=A" alt="Avatar Pengguna" class="rounded-full h-10 w-10 border-2 border-gray-600"></div>
-            </header>
-            
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-900 p-4 md:p-8">
-  <!-- Dashboard Section -->
-  <div id="dashboard" class="content-section">
-    <h2 class="text-3xl font-bold text-white mb-6">Dasbor Biaya Operasional</h2>
-
-    <!-- KPI Cards -->
-   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-  <!-- Card 1 -->
-  <div class="bg-[#1c1c1e] p-5 rounded-xl shadow-sm min-h-[120px] flex flex-col justify-between">
-    <h3 class="text-sm text-gray-400 font-medium">Total Biaya (Bulan Ini)</h3>
-    <p class="text-2xl font-semibold text-[#ff6b6b] mt-2" id="kpi-total-cost">Rp 0</p>
-  </div>
-
-  <!-- Card 2 -->
-  <div class="bg-[#1c1c1e] p-5 rounded-xl shadow-sm min-h-[120px] flex flex-col justify-between">
-    <h3 class="text-sm text-gray-400 font-medium">Biaya Bahan Bakar</h3>
-    <p class="text-2xl font-semibold text-[#f7b731] mt-2" id="kpi-fuel-cost">Rp 0</p>
-  </div>
-
-  <!-- Card 3 -->
-  <div class="bg-[#1c1c1e] p-5 rounded-xl shadow-sm min-h-[120px] flex flex-col justify-between">
-    <h3 class="text-sm text-gray-400 font-medium">Biaya Karyawan</h3>
-    <p class="text-2xl font-semibold text-[#4b7bec] mt-2" id="kpi-employee-cost">Rp 0</p>
-  </div>
-
-  <!-- Card 4 -->
-  <div class="bg-[#1c1c1e] p-5 rounded-xl shadow-sm min-h-[120px] flex flex-col justify-between">
-    <h3 class="text-sm text-gray-400 font-medium">Biaya Spare Part</h3>
-    <p class="text-2xl font-semibold text-[#fed330] mt-2" id="kpi-sparepart-cost">Rp 0</p>
-  </div>
-</div>
-
-    <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      <!-- Monthly Trend Chart -->
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg lg:col-span-3">
-        <h3 class="text-lg font-semibold text-white mb-4">Tren Biaya Bulanan</h3>
-        <div class="relative w-full h-[300px] md:h-[350px]">
-          <canvas id="monthlyCostTrendChart"></canvas>
+          <!-- Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div class="bg-[#1c1c1e] p-6 rounded-lg shadow lg:col-span-3">
+              <h3 class="text-lg text-white mb-4">Tren Biaya Bulanan</h3>
+              <div class="relative w-full h-[300px] md:h-[350px]">
+                <canvas id="monthlyCostTrendChart"></canvas>
+              </div>
+            </div>
+            <div class="bg-[#1c1c1e] p-6 rounded-lg shadow lg:col-span-2">
+              <h3 class="text-lg text-white mb-4">Komposisi Biaya</h3>
+              <div class="relative w-full h-[300px]">
+                <canvas id="costCompositionChart"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <!-- Cost Composition Chart -->
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg lg:col-span-2">
-        <h3 class="text-lg font-semibold text-white mb-4">Komposisi Biaya</h3>
-        <div class="relative w-full h-[300px]">
-          <canvas id="costCompositionChart"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
 
 
                 <!-- Employee Cost Section -->
