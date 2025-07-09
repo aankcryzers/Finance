@@ -599,11 +599,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Fungsi utama untuk merender semua komponen UI
     function renderAll() {
-        renderAllTables();
-        updateKPIs();
-        updateCharts();
-    }
+            renderEmployeeTable();
+            renderLogisticsTable();
+            renderSparepartTable();
+            renderRentalAssetTable();
+            updateDashboard();
+        }
 
-    // Inisialisasi saat pertama kali load
-    renderAll();
+        initializeCharts();
+        renderAll();
 });
